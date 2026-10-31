@@ -1,0 +1,31 @@
+
+name: Build CyberpunkAP DLL
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - fix/patch-2.5-compat
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout patched source
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Configure DLL
+        run: cmake -S native -B native/build -A x64
+
+      - name: Build DLL
+        run: cmake --build native/build --config Release
+
+      - name: Upload DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: CyberpunkAP-patch-2.5
+          path: Cyberpunk2077/red4ext/plugins/CyberpunkAP/CyberpunkAP.dll
+          if-no-files-found: error
